@@ -6,43 +6,56 @@
     <title>2u</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="..\static\css\main.css">
-    <script src="..\static\js\main.js"></script>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="{{ url_for('index')}}" style="margin-left: 20px;"><h1><strong>2u</strong></h1></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link button" style="border: none;" href="{{ url_for('converter') }}">Конвертер</a>
-        </li>
-        <li class="nav-item" >
-            <a class="nav-link button" style="border: none;" href="{{ url_for('crypto_news') }}">Новини</a>
-        </li>
-        {%block nav%}
-        <li class="nav-item" style="margin-left: 120%;">
-            <a class="nav-link button" href="{{ url_for('login') }}">Увійти</a>
-        </li>
-        <li class="nav-item" >
-            <a class="nav-link button" href="{{ url_for('registration') }}">Зареєструватися</a>
-        </li>
-        {%endblock nav%}
-        
-          
+            <li class="nav-item">
+                <a class="nav-link button" style="border: none;" href="{{ url_for('converter') }}">Конвертер</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link button" style="border: none;" href="{{ url_for('crypto_news') }}">Новини</a>
+            </li>
+            {%block nav%}
+            <li class="nav-item" style="margin-left: 120%;">
+                <a class="nav-link button" href="{{ url_for('login') }}">Увійти</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link button" href="{{ url_for('registration') }}">Зареєструватися</a>
+            </li>
+            {%endblock nav%}
         </ul>
     </div>
 </nav>
 <div class="container">
     <div class="container">
-    {% block content %}
+        {% block content %}
         <br><br>
-    <h2 style="margin-left: -200px;"><strong>Сьогоднішні Ціни на Криптовалюти за Ринковою Капіталізацією</strong></h2><br><br>
-    <h3 style="margin-left: -200px;"><strong>Топ 100 криптовалют зараз:</strong></h3>
-    <table style="width: 136%; margin-left: -200px; border-radius: 12px;" class="table table-hover">
-        <thead>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        {% if category == 'success' %}
+        <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <h2 style="margin-left: -200px;"><strong>Сьогоднішні Ціни на Криптовалюти за Ринковою Капіталізацією</strong>
+        </h2><br><br>
+        <h3 style="margin-left: -200px;"><strong>Топ 100 криптовалют зараз:</strong></h3>
+        <table style="width: 136%; margin-left: -200px; border-radius: 12px;" class="table table-hover">
+            <thead>
             <tr>
                 <th>#</th>
                 <th>Назва</th>
@@ -52,8 +65,8 @@
                 <th>Зміна за 7 днів (%)</th>
                 <th>Ринкова капіталізація (USD)</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             {% for index, crypto in enumerate(top_crypto, start=1) %}
             <tr>
                 <td>{{ index }}</td>
@@ -61,41 +74,40 @@
                 <td>${{ "%.3f"|format(crypto.quote.USD.price) }}</td>
                 <td>
                     {% if crypto.quote.USD.percent_change_1h < 0 %}
-                        <span style="color: red;">▼</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_1h) }}%
+                    <span style="color: red;">▼</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_1h) }}%
                     {% else %}
-                        <span style="color: green;">▲</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_1h) }}%
+                    <span style="color: green;">▲</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_1h) }}%
                     {% endif %}
                 </td>
                 <td>
                     {% if crypto.quote.USD.percent_change_24h < 0 %}
-                        <span style="color: red;">▼</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_24h) }}%
+                    <span style="color: red;">▼</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_24h) }}%
                     {% else %}
-                        <span style="color: green;">▲</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_24h) }}%
+                    <span style="color: green;">▲</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_24h) }}%
                     {% endif %}
                 </td>
                 <td>
                     {% if crypto.quote.USD.percent_change_7d < 0 %}
-                        <span style="color: red;">▼</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_7d) }}%
+                    <span style="color: red;">▼</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_7d) }}%
                     {% else %}
-                        <span style="color: green;">▲</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_7d) }}%
+                    <span style="color: green;">▲</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_7d) }}%
                     {% endif %}
                 </td>
-                
+
 
                 <td>${{ "%.3f"|format(crypto.quote.USD.market_cap) }}</td>
             </tr>
             {% endfor %}
-        </tbody>
-    </table>
-    {% endblock content %}
-</div>
+            </tbody>
+        </table>
+        {% endblock content %}
+    </div>
 </div>
 <footer class="container-fluid" style="background-color: #f2f2f2; padding: 20px 0; text-align: center;">
     <div class="footer-meta">
         <p>© 2u. Усі права захищені</p>
     </div>
 </footer>
-
+<script src="..\static\js\closing_alert.js"></script>
 </body>
-</html> 
-
+</html>

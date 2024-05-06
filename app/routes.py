@@ -48,17 +48,19 @@ def crypto_news():
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    if request.method == 'POST' and form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-        user = User.query.filter_by(email=email).first()
+        user = session.query(User).filter_by(email=email).first()
         if user:
             if user.password == password:
-                flash('Ви успішно увійшли до облікового запису!', 'success')
+                flash('Ви успішно увійшли в обліковий запис', 'success')
                 return redirect(url_for('index'))
             else:
-                flash('Неправильний пароль або електронна пошта.', 'error')
+                flash('Неправильный пароль или электронная пошта', 'error')
+        else:
+            flash('Неправильный пароль или электронная почта.', 'error')
 
     return render_template('login.html', form=form)
 
