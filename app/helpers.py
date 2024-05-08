@@ -94,6 +94,14 @@ class LoginForm(flask_wtf.FlaskForm):
     submit = wtforms.SubmitField('Submit')
 
 
+class UpdateProfileForm(flask_wtf.FlaskForm):
+    nickname = wtforms.StringField('Nickname', validators=[DataRequired()], render_kw={"placeholder": "Ваш нікнейм"})
+    email = wtforms.StringField('Email', validators=[DataRequired(), Email()],
+                                render_kw={"placeholder": "example@example.com"})
+    password = wtforms.PasswordField('Password', validators=[Length(min=8)], render_kw={"placeholder": "Ваш пароль"})
+    submit = wtforms.SubmitField("Update")
+
+
 class ConverterForm(flask_wtf.FlaskForm):
     from_crypto = wtforms.SelectField('From crypto')
     to_crypto = wtforms.SelectField('To crypto')

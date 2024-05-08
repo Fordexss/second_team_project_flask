@@ -1,13 +1,13 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
-
+from flask import Flask, render_template, redirect, url_for, flash, request, make_response
+from datetime import timedelta
 from db.db import User, Session
 from helpers import get_crypto_data, get_crypto_news, get_crypto_price, get_top_crypto, custom_enumerate, ConverterForm, \
-    RegistrationForm, LoginForm
+    RegistrationForm, LoginForm, UpdateProfileForm
 
 app = Flask(__name__)
 session = Session()
 
-app.config['SECRET_KEY'] = '2u'
+app.config['SECRET_KEY'] = 'CryptoInformer'
 
 
 # Основний функціонал
@@ -48,17 +48,25 @@ def crypto_news():
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    if request.method == 'POST' and form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-        user = User.query.filter_by(email=email).first()
+        user = session.query(User).filter_by(email=email).first()
         if user:
+            if request.cookies.get('user_id') == str(user.id):
+                flash('Ви вже увійшли в обліковий запис. Будь ласка, вийдіть перед спробою знову увійти.', 'info')
+                return render_template('login.html', form=form)
             if user.password == password:
-                flash('Ви успішно увійшли до облікового запису!', 'success')
-                return redirect(url_for('index'))
+                flash('Ви успішно увійшли в обліковий запис', 'success')
+                response = make_response(redirect(url_for('index')))
+                cookie_max_age = timedelta(days=3).total_seconds()
+                response.set_cookie('user_id', str(user.id), max_age=cookie_max_age)
+                return response
             else:
-                flash('Неправильний пароль або електронна пошта.', 'error')
+                flash('Неправильний пароль або електронна пошта', 'error')
+        else:
+            flash('Неправильний пароль або електронна пошта', 'error')
 
     return render_template('login.html', form=form)
 
@@ -89,6 +97,46 @@ def registration():
 
     form = RegistrationForm()
     return render_template('registration.html', form=form)
+
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    form = UpdateProfileForm()
+    user_id = request.cookies.get('user_id')
+    if user_id:
+        user = session.query(User).filter_by(id=user_id).first()
+        if user:
+            if form.validate_on_submit():
+                user.nickname = form.nickname.data
+                user.email = form.email.data
+                if form.password.data:
+                    user.password = form.password.data
+                session.commit()
+                flash('Профіль успішно оновлено', 'success')
+                return redirect(url_for('profile'))
+            form.nickname.data = user.nickname
+            form.email.data = user.email
+            return render_template('profile.html', form=form)
+    flash('Будь ласка, увійдіть у свій аккаунт', 'error')
+    return redirect(url_for('login'))
+
+
+@app.route('/update_profile', methods=['POST'])
+def update_profile():
+    form = UpdateProfileForm(request.form)
+    user_id = request.cookies.get('user_id')
+    if user_id:
+        user = session.query(User).filter_by(id=user_id).first()
+        if user and form.validate():
+            user.nickname = form.nickname.data
+            user.email = form.email.data
+            if form.password.data:
+                user.password = form.password.data
+            session.commit()
+            flash('Профіль успішно оновлено', 'success')
+            return redirect(url_for('profile'))
+    flash('Щось пішло не так, спробуйте ще раз', 'error')
+    return redirect(url_for('profile'))
 
 
 @app.route('/converter/', methods=['GET', 'POST'])
