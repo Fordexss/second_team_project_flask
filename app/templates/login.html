@@ -10,19 +10,23 @@
 <br><br><br><br><br>
 <div class="container" style="width: 700px; height: 500px; margin-bottom: -20px;">
     {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                {% if category == 'success' %}
-                    <div class="alert alert-success">
-                        {{ message }}
-                    </div>
-                {% elif category == 'error' %}
-                    <div class="alert alert-danger">
-                        {{ message }}
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+    {% if messages %}
+    {% for category, message in messages %}
+    {% if category == 'success' %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+    {% elif category == 'error' %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+    {% elif category == 'info' %} {# Блок для кукі, повідомляти користувача коли він залогінився #}
+    <div class="alert alert-info">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
     {% endwith %}
 
     <form method="post">

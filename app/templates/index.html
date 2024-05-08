@@ -1,35 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2u</title>
+    <title>CryptoInformer</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="..\static\css\main.css">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="{{ url_for('index')}}" style="margin-left: 20px;"><h1><strong>2u</strong></h1></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <a class="navbar-brand" href="{{ url_for('index')}}">
+        <h1><strong>CryptoInformer</strong></h1>
+    </a>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <a class="nav-link button" style="border: none;" href="{{ url_for('converter') }}">Конвертер</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link button" style="border: none;" href="{{ url_for('crypto_news') }}">Новини</a>
             </li>
-            {%block nav%}
-            <li class="nav-item" style="margin-left: 120%;">
+            {% block nav %}
+            <li class="nav-item">
                 <a class="nav-link button" href="{{ url_for('login') }}">Увійти</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link button" href="{{ url_for('registration') }}">Зареєструватися</a>
             </li>
-            {%endblock nav%}
+            <li class="nav-item">
+                <a class="nav-link button" href="{{ url_for('profile') }}">Особистий кабінет</a>
+            </li>
+            {% endblock %}
         </ul>
     </div>
 </nav>
@@ -93,8 +94,6 @@
                     <span style="color: green;">▲</span>{{ "%.3f"|format(crypto.quote.USD.percent_change_7d) }}%
                     {% endif %}
                 </td>
-
-
                 <td>${{ "%.3f"|format(crypto.quote.USD.market_cap) }}</td>
             </tr>
             {% endfor %}
@@ -105,9 +104,10 @@
 </div>
 <footer class="container-fluid" style="background-color: #f2f2f2; padding: 20px 0; text-align: center;">
     <div class="footer-meta">
-        <p>© 2u. Усі права захищені</p>
+        <p>© CryptoInformer. Усі права захищені</p>
     </div>
 </footer>
-<script src="..\static\js\closing_alert.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

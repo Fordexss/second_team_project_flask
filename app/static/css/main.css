@@ -23,27 +23,20 @@ nav ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    display: flex;
+    align-items: center;
 }
 
 nav ul li {
-    display: inline;
     margin-right: 20px;
 }
 
-nav ul li a {
-    color: #fff;
-    text-decoration: none;
+nav ul.navbar-nav.mr-auto {
+    margin-right: auto;
 }
 
-.main-content {
-    padding: 20px 0;
-}
-
-footer {
-    background-color: #cecece;
-    padding: 20px 0;
-    text-align: center;
-    margin-top: 0;
+nav ul.navbar-nav.ml-auto {
+    margin-left: auto;
 }
 
 a.button {
@@ -58,23 +51,37 @@ a.button {
     color: rgb(70, 70, 70);
     background-clip: text;
     font-family: Georgia;
-    margin-left: 30%;
-    width: 120%;
     border-radius: 12px;
+    margin-left: 5px;
+}
+
+nav ul.navbar-nav.mr-auto > li:nth-child(n+3) {
+    margin-left: 20px;
+}
+
+.main-content {
+    padding: 20px 0;
+}
+
+footer {
+    background-color: #cecece;
+    padding: 20px 0;
+    text-align: center;
+    margin-top: 0;
 }
 
 table {
     border-collapse: collapse;
-  }
-  
-  th, td {
+}
+
+th, td {
     border: 0.5px solid #b9b9b9;
     padding: 8px;
-  }
-  
-  th {
+}
+
+th {
     text-align: left;
-  }
+}
 
 form {
     background-color: #fff;
@@ -82,6 +89,7 @@ form {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
 input[type="text"],
 input[type="password"] {
     width: 100%;
@@ -91,6 +99,7 @@ input[type="password"] {
     border-radius: 4px;
     box-sizing: border-box;
 }
+
 input[type="submit"] {
     width: 100%;
     padding: 10px;
@@ -100,9 +109,10 @@ input[type="submit"] {
     border-radius: 4px;
     cursor: pointer;
 }
+
 input[type="submit"]:hover {
     background-color: #0056b3;
-} 
+}
 
 .slider {
     border: 1px solid black;
@@ -122,9 +132,8 @@ input[type="submit"]:hover {
     transition: all ease 1s;
 }
 
-
 .card {
-    margin: 30px, 30px, 30px, 30px;
+    margin: 30px 30px 30px 30px;
 }
 
 .block-converted {
@@ -134,4 +143,8 @@ input[type="submit"]:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     font-size: 2em;
     width: 600px;
+}
+
+.navbar-brand + .navbar-nav > .nav-item {
+    margin-left: 20px;
 }
