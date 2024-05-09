@@ -20,7 +20,8 @@
             <li class="nav-item">
                 <a class="nav-link button" style="border: none;" href="{{ url_for('crypto_news') }}">Новини</a>
             </li>
-            {% block nav %}
+        </ul>
+        <ul class="navbar-nav mr-auto">
             <li class="nav-item">
                 <a class="nav-link button" href="{{ url_for('login') }}">Увійти</a>
             </li>
@@ -30,7 +31,6 @@
             <li class="nav-item">
                 <a class="nav-link button" href="{{ url_for('profile') }}">Особистий кабінет</a>
             </li>
-            {% endblock %}
         </ul>
     </div>
 </nav>
