@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, make_response
 from datetime import timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
 from db.db import User, Session
 from helpers import get_crypto_data, get_crypto_news, get_crypto_price, get_top_crypto, custom_enumerate, ConverterForm, \
     RegistrationForm, LoginForm, UpdateProfileForm
@@ -57,7 +58,9 @@ def login():
             if request.cookies.get('user_id') == str(user.id):
                 flash('Ви вже увійшли в обліковий запис. Будь ласка, вийдіть перед спробою знову увійти.', 'info')
                 return render_template('login.html', form=form)
-            if user.password == password:
+
+            # Порівняйте хеш пароля, який ввів користувач, зі збереженим хешем в базі даних
+            if check_password_hash(user.password, password):
                 flash('Ви успішно увійшли в обліковий запис', 'success')
                 response = make_response(redirect(url_for('index')))
                 cookie_max_age = timedelta(days=3).total_seconds()
@@ -88,7 +91,9 @@ def registration():
             flash("Користувач з такою поштою вже існує", category='error')
             return redirect(url_for('registration'))
 
-        new_user = User(nickname=username, email=email, password=password)
+        hashed_password = generate_password_hash(password)
+
+        new_user = User(nickname=username, email=email, password=hashed_password)
         session.add(new_user)
         session.commit()
 
@@ -110,7 +115,7 @@ def profile():
                 user.nickname = form.nickname.data
                 user.email = form.email.data
                 if form.password.data:
-                    user.password = form.password.data
+                    user.password = generate_password_hash(form.password.data)
                 session.commit()
                 flash('Профіль успішно оновлено', 'success')
                 return redirect(url_for('profile'))
@@ -131,7 +136,7 @@ def update_profile():
             user.nickname = form.nickname.data
             user.email = form.email.data
             if form.password.data:
-                user.password = form.password.data
+                user.password = generate_password_hash(form.password.data)
             session.commit()
             flash('Профіль успішно оновлено', 'success')
             return redirect(url_for('profile'))
