@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, make_response
+from flask import Flask, render_template, request, redirect, url_for, flash, make_response
 from datetime import timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from db.db import User, Session
@@ -59,7 +59,6 @@ def login():
                 flash('Ви вже увійшли в обліковий запис. Будь ласка, вийдіть перед спробою знову увійти.', 'info')
                 return render_template('login.html', form=form)
 
-            # Порівняйте хеш пароля, який ввів користувач, зі збереженим хешем в базі даних
             if check_password_hash(user.password, password):
                 flash('Ви успішно увійшли в обліковий запис', 'success')
                 response = make_response(redirect(url_for('index')))
@@ -142,6 +141,14 @@ def update_profile():
             return redirect(url_for('profile'))
     flash('Щось пішло не так, спробуйте ще раз', 'error')
     return redirect(url_for('profile'))
+
+
+@app.route('/logout')
+def logout():
+    response = make_response(redirect(url_for('index')))
+    response.set_cookie('user_id', '', expires=0)
+    flash('Ви успішно вийшли з облікового запису', 'info')
+    return response
 
 
 @app.route('/converter/', methods=['GET', 'POST'])
