@@ -21,7 +21,7 @@
     {% endwith %}
     <div class="row justify-content-center mt-5">
         <div class="col-md-6">
-            <form method="POST" action="{{ url_for('update_profile') }}">
+            <form method="POST" action="{{ url_for('update_profile') }}" style="width: 150%; margin-left: -50px;">
                 {{ form.hidden_tag() }}
                 <div class="form-group">
                     {{ form.nickname.label(class="form-label") }}
