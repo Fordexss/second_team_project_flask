@@ -2,8 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, mak
 from datetime import timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from db.db import User, Session
-from helpers import get_crypto_data, get_crypto_news, get_crypto_price, get_top_crypto, custom_enumerate, ConverterForm, \
-    RegistrationForm, LoginForm, UpdateProfileForm
+from helpers import get_crypto_data, get_crypto_news, get_crypto_price, get_top_crypto, custom_enumerate, ConverterForm, RegistrationForm, LoginForm, UpdateProfileForm, crypto_for_converter
 
 app = Flask(__name__)
 session = Session()
@@ -34,7 +33,7 @@ def index():
         return 'Не вдалося отримати дані про топ-100 криптовалют'
 
 
-@app.route('/news')
+@app.route('/news/')
 def crypto_news():
     cookie = request.cookies.get('user_id')
     news = get_crypto_news()
@@ -109,7 +108,7 @@ def registration():
     return render_template('registration.html', form=form, cookie=cookie)
 
 
-@app.route('/profile', methods=['GET', 'POST'])
+@app.route('/profile/', methods=['GET', 'POST'])
 def profile():
     cookie = request.cookies.get('user_id')
     form = UpdateProfileForm()
@@ -132,7 +131,7 @@ def profile():
     return redirect(url_for('login'))
 
 
-@app.route('/update_profile', methods=['POST'])
+@app.route('/update_profile/', methods=['POST'])
 def update_profile():
     form = UpdateProfileForm(request.form)
     user_id = request.cookies.get('user_id')
@@ -150,7 +149,7 @@ def update_profile():
     return redirect(url_for('profile'))
 
 
-@app.route('/logout')
+@app.route('/logout/')
 def logout():
     response = make_response(redirect(url_for('index')))
     response.set_cookie('user_id', '', expires=0)
@@ -158,28 +157,25 @@ def logout():
     return response
 
 
+
+
 @app.route('/converter/', methods=['GET', 'POST'])
 def converter():
     cookie = request.cookies.get('user_id')
     form = ConverterForm()
     if request.method == 'GET':
-        top_crypto = get_top_crypto()
-        if top_crypto:
-            form.from_crypto.choices = []
-            form.to_crypto.choices = []
-            for crypto in top_crypto:
-                form.from_crypto.choices.append((crypto['symbol'], crypto['symbol']))
-                form.to_crypto.choices.append((crypto['symbol'], crypto['symbol']))
+        crypto_for_converter(form)
         return render_template('converter.html', form=form, cookie=cookie)
     else:
         from_crypto = request.form.get('from_crypto')
         amount = int(request.form.get('amount'))
         to_crypto = request.form.get('to_crypto')
         price = get_crypto_price(from_crypto, to_crypto)
+        crypto_for_converter(form)
         if price:
             price_f = price * amount
-        return render_template('converted.html', from_crypto=from_crypto, amount=amount, to_crypto=to_crypto,
-                               price_f=price_f, cookie=cookie)
+        flash(f'Ціна { amount } { from_crypto.upper() } у { to_crypto.upper() }: { price_f } { to_crypto.upper() }', 'converted')
+        return render_template('converter.html', form=form, cookie=cookie)
 
 
 # Додатково

@@ -107,3 +107,12 @@ class ConverterForm(flask_wtf.FlaskForm):
     to_crypto = wtforms.SelectField('To crypto')
     amount = wtforms.IntegerField('Amount of "From crypto"')
     submit = wtforms.SubmitField('Розрахувати')
+
+def crypto_for_converter(form):
+    top_crypto = get_top_crypto()
+    if top_crypto:
+        form.from_crypto.choices = []
+        form.to_crypto.choices = []
+        for crypto in top_crypto:
+            form.from_crypto.choices.append((crypto['symbol'], crypto['symbol']))
+            form.to_crypto.choices.append((crypto['symbol'], crypto['symbol']))
