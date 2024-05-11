@@ -13,8 +13,11 @@ app.config['SECRET_KEY'] = 'CryptoInformer'
 
 # Основний функціонал
 
+
+
 @app.route('/')
 def index():
+    cookie = request.cookies.get('user_id')
     news = get_crypto_news()
     if news:
         news_f_temp = []
@@ -26,13 +29,14 @@ def index():
     if top_crypto:
         for crypto in top_crypto:
             crypto['name'] = f"{crypto['name']} ({crypto['symbol']})"
-        return render_template('index.html', top_crypto=top_crypto, enumerate=custom_enumerate, news=news_f_temp)
+        return render_template('index.html', top_crypto=top_crypto, enumerate=custom_enumerate, news=news_f_temp, cookie=cookie)
     else:
         return 'Не вдалося отримати дані про топ-100 криптовалют'
 
 
 @app.route('/news')
 def crypto_news():
+    cookie = request.cookies.get('user_id')
     news = get_crypto_news()
     if news:
         news_f_temp = []
@@ -41,13 +45,14 @@ def crypto_news():
             url = article['url']
             news_f_temp.append((title, url))
         print(news_f_temp)
-        return render_template('news.html', news=news_f_temp)
+        return render_template('news.html', news=news_f_temp, cookie=cookie)
     else:
         return 'На жаль, не вдалося отримати новини'
 
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
+    cookie = request.cookies.get('user_id')
     form = LoginForm()
     if request.method == 'POST':
         email = request.form.get('email')
@@ -57,7 +62,7 @@ def login():
         if user:
             if request.cookies.get('user_id') == str(user.id):
                 flash('Ви вже увійшли в обліковий запис. Будь ласка, вийдіть перед спробою знову увійти.', 'info')
-                return render_template('login.html', form=form)
+                return render_template('login.html', form=form, cookie=cookie)
 
             if check_password_hash(user.password, password):
                 flash('Ви успішно увійшли в обліковий запис', 'success')
@@ -70,11 +75,12 @@ def login():
         else:
             flash('Неправильний пароль або електронна пошта', 'error')
 
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, cookie=cookie)
 
 
 @app.route('/registration/', methods=['GET', 'POST'])
 def registration():
+    cookie = request.cookies.get('user_id')
     if request.method == 'POST':
         username = request.form.get('nickname')
         email = request.form.get('email')
@@ -100,11 +106,12 @@ def registration():
         return redirect(url_for('login'))
 
     form = RegistrationForm()
-    return render_template('registration.html', form=form)
+    return render_template('registration.html', form=form, cookie=cookie)
 
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
+    cookie = request.cookies.get('user_id')
     form = UpdateProfileForm()
     user_id = request.cookies.get('user_id')
     if user_id:
@@ -120,7 +127,7 @@ def profile():
                 return redirect(url_for('profile'))
             form.nickname.data = user.nickname
             form.email.data = user.email
-            return render_template('profile.html', form=form)
+            return render_template('profile.html', form=form, cookie=cookie)
     flash('Будь ласка, увійдіть у свій аккаунт', 'error')
     return redirect(url_for('login'))
 
@@ -153,6 +160,7 @@ def logout():
 
 @app.route('/converter/', methods=['GET', 'POST'])
 def converter():
+    cookie = request.cookies.get('user_id')
     form = ConverterForm()
     if request.method == 'GET':
         top_crypto = get_top_crypto()
@@ -162,7 +170,7 @@ def converter():
             for crypto in top_crypto:
                 form.from_crypto.choices.append((crypto['symbol'], crypto['symbol']))
                 form.to_crypto.choices.append((crypto['symbol'], crypto['symbol']))
-        return render_template('converter.html', form=form)
+        return render_template('converter.html', form=form, cookie=cookie)
     else:
         from_crypto = request.form.get('from_crypto')
         amount = int(request.form.get('amount'))
@@ -171,7 +179,7 @@ def converter():
         if price:
             price_f = price * amount
         return render_template('converted.html', from_crypto=from_crypto, amount=amount, to_crypto=to_crypto,
-                               price_f=price_f)
+                               price_f=price_f, cookie=cookie)
 
 
 # Додатково
@@ -190,6 +198,7 @@ def get_symbol_price(pair):
 
 @app.route('/<symbol>')
 def get_crypto_info(symbol):
+    cookie = request.cookies.get('user_id')
     crypto_data = get_crypto_data(symbol)
     if crypto_data:
         symbol = crypto_data['symbol']
@@ -200,7 +209,7 @@ def get_crypto_info(symbol):
         percent_change_7d = crypto_data['quote']['USD']['percent_change_7d']
         return render_template('crypto_info.html', symbol=symbol, name=name, price=price,
                                percent_change_1h=percent_change_1h, percent_change_24h=percent_change_24h,
-                               percent_change_7d=percent_change_7d)
+                               percent_change_7d=percent_change_7d, cookie=cookie)
     else:
         return 'Дані не знайдено'
 
