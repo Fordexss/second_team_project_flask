@@ -173,7 +173,7 @@ def converter():
         price = get_crypto_price(from_crypto, to_crypto)
         crypto_for_converter(form)
         if price:
-            price_f = price * amount
+            price_f = round(price * amount, 2)
         flash(f'Ціна { amount } { from_crypto.upper() } у { to_crypto.upper() }: { price_f } { to_crypto.upper() }', 'converted')
         return render_template('converter.html', form=form, cookie=cookie)
 
